@@ -1,0 +1,258 @@
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX aoprop: <https://www.ariadne-infrastructure.eu/property/>
+PREFIX onto: <http://www.ontotext.com/>
+PREFIX ariadneplus: <https://ariadne-infrastructure.eu/aocat/>
+PREFIX time: <http://www.w3.org/2006/time#>
+
+CONSTRUCT {
+%record aoprop:rdfType "Collection" .
+%record aoprop:identifier %record .
+%record aoprop:originalId ?originalId .
+%record aoprop:issued ?issued .
+%record aoprop:modified ?modified .
+%record aoprop:created ?created .
+%record aoprop:partOf ?partOf .
+%record aoprop:creator ?creator .
+?creator aoprop:name ?creatorName .
+?creator aoprop:email ?creatorEmail .
+?creator aoprop:homepage ?creatorHomepage .
+?creator aoprop:institution ?creatorInstitution .
+?creator aoprop:agentIdentifier ?creator .
+%record aoprop:contributor ?contributor .
+?contributor aoprop:name ?contributorName .
+?contributor aoprop:email ?contributorEmail .
+?contributor aoprop:homepage ?contributorHomepage .
+?contributor aoprop:institution ?contributorInstitution .
+?contributor aoprop:agentIdentifier ?contributor .
+%record aoprop:legalResponsible ?legalResponsible .
+?legalResponsible aoprop:name ?legalResponsibleName .
+?legalResponsible aoprop:email ?legalResponsibleEmail .
+?legalResponsible aoprop:homepage ?legalResponsibleHomepage .
+?legalResponsible aoprop:institution ?legalResponsibleInstitution .
+?legalResponsible aoprop:agentIdentifier ?legalResponsible .
+%record aoprop:owner ?owner .
+?owner aoprop:name ?ownerName .
+?owner aoprop:email ?ownerEmail .
+?owner aoprop:homepage ?ownerHomepage .
+?owner aoprop:institution ?ownerInstitution .
+?owner aoprop:agentIdentifier ?owner .
+%record aoprop:publisher ?publisher .
+?publisher aoprop:name ?publisherName .
+?publisher aoprop:email ?publisherEmail .
+?publisher aoprop:homepage ?publisherHomepage .
+?publisher aoprop:institution ?publisherInstitution .
+?publisher aoprop:agentIdentifier ?publisher .
+%record aoprop:accessPolicy ?accessPolicy .
+%record aoprop:accessRights ?accessRights .
+%record aoprop:landingPage ?landingPage .
+%record aoprop:spatialRegion ?spatialRegion .
+?spatialRegion aoprop:placeName ?spatialPlaceName .
+%record aoprop:spatialRegionPoint ?spatialRegionPoint .
+?spatialRegionPoint aoprop:lat ?spatialLocationLat .
+?spatialRegionPoint aoprop:lon ?spatialLocationLon .
+%record aoprop:spatialRegionBox ?spatialRegionBox .
+?spatialRegionBox aoprop:boxMaxLat ?spatialLocationBBMaxLat .
+?spatialRegionBox aoprop:boxMaxLon ?spatialLocationBBMaxLon .
+?spatialRegionBox aoprop:boxMinLat ?spatialLocationBBMinLat .
+?spatialRegionBox aoprop:boxMinLon ?spatialLocationBBMinLon .
+%record aoprop:spatialRegionWKTPolygon ?spatialRegionWKTPolygon .
+?spatialRegionWKTPolygon aoprop:wkt ?wkt .
+%record aoprop:temporal ?temporal .
+?temporal aoprop:periodOName ?temporalPeriodName .
+?temporal aoprop:from ?temporalFrom .
+?temporal aoprop:until ?temporalUntil .
+?temporal aoprop:uri ?temporal .
+%record aoprop:temporalNative ?temporalNative .
+?temporalNative aoprop:nativePeriodName ?temporalNativePeriodName .
+?temporalNative aoprop:nativeFrom ?temporalNativeFrom .
+?temporalNative aoprop:nativeUntil ?temporalNativeUntil .
+%record aoprop:archeologicalResourceType ?archeologicalResourceType .
+?archeologicalResourceType aoprop:name ?archeologicalResourceTypeName .
+%record aoprop:resourceType ?resourceType .
+%record aoprop:typeURI ?typeURI .
+%record aoprop:typeLabel ?typeLabel .
+%record aoprop:about ?aboutURI .
+?aboutURI aoprop:aboutURI ?aboutURI .
+?aboutURI aoprop:aboutURILabel ?aboutLabel .
+%record aoprop:nativeSubject ?nativeSubject .
+?nativeSubject aoprop:prefLabel ?nativeSubjectPrefLabel .
+?nativeSubject aoprop:rdfAbout ?nativeSubject .
+%record aoprop:derivedSubject ?derivedSubject .
+?derivedSubject aoprop:prefLabel ?derivedSubjectPrefLabel .
+?derivedSubject aoprop:source "Getty AAT" .
+%record aoprop:aatSubjects ?derivedSubject .
+?derivedSubject aoprop:id ?derivedSubject .
+?derivedSubject aoprop:label ?derivedSubjectPrefLabel .
+?derivedSubject aoprop:lang ?aatSubjectsLang .
+%record aoprop:title ?title .
+%record aoprop:description ?description .
+%record aoprop:language ?language .
+}
+where {
+    graph <https://ariadne-infrastructure.eu/api_________::ariadne_plus::%datasource::%collectionId> {
+    	%record	aocat:has_language / skos:prefLabel ?language .
+    	%record	aocat:has_original_id ?originalId .
+    	optional {
+    	    %record aocat:is_part_of ?partOf .
+    	}
+    	%record	aocat:has_creator ?creator .
+        ?creator aocat:has_name ?creatorName .
+	    %record aocat:has_title ?title .
+    	%record aocat:has_type / skos:prefLabel ?resourceType .
+    	%record aocat:has_type  ?typeURI .
+        ?typeURI skos:prefLabel ?typeLabel .
+        optional {
+            %record aocat:is_about ?aboutURI .
+            ?aboutURI rdfs:label ?aboutLabel .
+    	}
+    	optional {
+    	    %record aocat:has_native_subject ?nativeSubject .
+            ?nativeSubject skos:prefLabel ?nativeSubjectPrefLabel .
+        }
+        optional {
+	        ?creator aocat:has_email ?creatorEmail .
+    	}
+        optional {
+            %record aocat:has_description ?description .
+        }
+        optional {
+            %record aocat:has_access_policy / rdfs:label ?accessPolicy .
+        }
+        optional {
+        	%record aocat:has_landing_page / rdfs:label ?landingPage .
+        }
+    }
+
+    graph <https://ariadne-infrastructure.eu/ariadneplus::%datasource::aatplus> {
+        optional {
+            %record aocat:has_derived_subject ?derivedSubject .
+            graph <https://ariadne-infrastructure.eu/api_________::ariadne_plus::%datasource::aat> {
+                ?derivedSubject skos:prefLabel ?derivedSubjectPrefLabel .
+            }
+        }
+    }
+
+    {
+    select  *
+    where {
+        optional {
+            graph <https://ariadne-infrastructure.eu/api_________::ariadne_plus::%datasource::%collectionId> {
+                %record aocat:has_temporal_coverage  ?temporalNative .
+                ?temporalNative aocat:has_native_period / skos:prefLabel ?temporalNativePeriodName .
+                optional {
+                    ?temporalNative aocat:from ?temporalNativeFrom .
+                    ?temporalNative aocat:until ?temporalNativeUntil .
+                }
+            }
+        }
+    }
+    }
+
+    optional {
+            graph <https://ariadne-infrastructure.eu/api_________::ariadne_plus::%datasource::%collectionId> {
+                    %record aocat:has_temporal_coverage ?temporal .
+                }
+            graph <https://ariadne-infrastructure.eu/ariadneplus::%datasource::periodoplus> {
+                ?temporal aocat:has_period ?label .
+                graph <https://ariadne-infrastructure.eu/ariadneplus::%datasource::periodo> {
+                    ?label skos:prefLabel ?temporalPeriodName .
+                }
+                optional {
+                    ?temporal aocat:from ?temporalFrom .
+                    ?temporal aocat:until ?temporalUntil .
+                }
+            }
+        }
+
+    graph <https://ariadne-infrastructure.eu/api_________::ariadne_plus::%datasource::%collectionId> {
+        {
+        select  *
+        where {
+            %record aocat:was_issued ?issued .
+            %record aocat:was_modified ?modified .
+            %record aocat:has_contributor ?contributor .
+            ?contributor aocat:has_name ?contributorName .
+            %record aocat:has_responsible ?legalResponsible .
+            ?legalResponsible aocat:has_name ?legalResponsibleName .
+            %record aocat:has_owner ?owner .
+            ?owner aocat:has_name ?ownerName .
+            %record aocat:has_publisher ?publisher .
+            ?publisher aocat:has_name ?publisherName .
+            %record aocat:has_access_rights ?accessRights .
+            %record  aocat:has_ARIADNE_subject ?archeologicalResourceType .
+            ?archeologicalResourceType skos:prefLabel ?archeologicalResourceTypeName .
+            optional {
+                %record aocat:was_created_on ?created .
+            }
+            optional {
+                ?contributor aocat:has_email ?contributorEmail .
+            }
+            optional {
+                ?contributor aocat:has_homepage ?contributorHomepage .
+            }
+            optional {
+                ?contributor aocat:has_institution ?contributorInstitution .
+            }
+            optional {
+                ?legalResponsible aocat:has_email ?legalResponsibleEmail .
+            }
+            optional {
+                ?legalResponsible aocat:has_homepage ?legalResponsibleHomepage .
+            }
+            optional {
+                ?legalResponsible aocat:has_institution ?legalResponsibleInstitution .
+            }
+            optional {
+                ?owner aocat:has_email ?ownerEmail .
+            }
+            optional {
+                ?owner aocat:has_homepage ?ownerHomepage .
+            }
+            optional {
+                ?owner aocat:has_institution ?ownerInstitution .
+            }
+            optional {
+                ?publisher aocat:has_email ?publisherEmail .
+            }
+            optional {
+                ?publisher aocat:has_homepage ?publisherHomepage .
+            }
+            optional {
+                ?publisher aocat:has_institution ?publisherInstitution .
+            }
+        }
+        }
+    }
+
+    graph <https://ariadne-infrastructure.eu/api_________::ariadne_plus::%datasource::%collectionId> {
+    	{
+        select *
+        where {
+            optional {
+                %record	aocat:has_spatial_coverage ?spatialRegion .
+                ?spatialRegion  aocat:has_place_name ?spatialPlaceName .
+            }
+            optional {
+                %record	aocat:has_spatial_coverage ?spatialRegionPoint .
+                ?spatialRegionPoint aocat:has_latitude ?spatialLocationLat ;
+                         aocat:has_longitude ?spatialLocationLon .
+            }
+            optional {
+                %record	aocat:has_spatial_coverage ?spatialRegionBox .
+                ?spatialRegionBox aocat:has_bounding_box_max_lat ?spatialLocationBBMaxLat ;
+                         aocat:has_bounding_box_max_lon ?spatialLocationBBMaxLon ;
+                         aocat:has_bounding_box_min_lat ?spatialLocationBBMinLat ;
+                         aocat:has_bounding_box_min_lon ?spatialLocationBBMinLon ;
+            }
+            optional {
+                %record aocat:has_spatial_coverage ?spatialRegionWKTPolygon .
+                ?spatialRegionWKTPolygon rdf:type aocat:AO_Spatial_Region_Polygon .
+                ?spatialRegionWKTPolygon aocat:has_polygonal_representation ?wkt .
+            }
+            }
+        }
+    }
+    BIND (lang(?derivedSubjectPrefLabel) as ?aatSubjectsLang)
+}
