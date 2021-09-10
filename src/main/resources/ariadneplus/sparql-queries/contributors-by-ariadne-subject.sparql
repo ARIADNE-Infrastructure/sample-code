@@ -1,0 +1,9 @@
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT (count(?resource)) AS ?cnt ?contributorName ?as  WHERE {
+    ?resource aocat:has_contributor ?contributor .
+    ?contributor aocat:has_name ?contributorName .
+    ?resource aocat:has_ARIADNE_subject ?as
+}
+GROUP BY ?contributorName ?as
