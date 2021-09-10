@@ -16,17 +16,25 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
-
+/**
+ * This a very simple example on how to connect to the ARIADNEplus GraphDB.
+ *
+ * @author Enrico Ottonello
+ * @author Alessia Bardi
+ */
 public class GraphDBReader {
 
     private static String graphDBUrl = "https://graphdb-test.ariadne.d4science.org";
     private static String graphDBRepository = "ariadneplus-ts01";
-    private static ClassPathResource queryTemplateResource = new ClassPathResource("ariadneplus/sample/templates/read_collection_data_template.sparql");
+
     private static RepositoryConnection connection;
     private static RemoteRepositoryManager manager;
     private static Repository repository;
+
     private static String queryProvenanceGraph = "SELECT ?s ?p ?o WHERE {GRAPH <https://ariadne-infrastructure.eu/datasourceApis> {?s ?p ?o}}";
 
+    //For CONSTRUCT QUERY
+    private static ClassPathResource queryTemplateResource = new ClassPathResource("ariadneplus/sample/templates/read_collection_data_template.sparql");
     private static String resourceIRI = "https://ariadne-infrastructure.eu/aocat/Collection/ADS/AAA81A6D-56F3-341C-BAF0-791C31BC7F73";
     private static String datasource = "ads";
     private static String collectionId = "398";
@@ -37,6 +45,7 @@ public class GraphDBReader {
            openConnection();
            System.out.println("Connection opened");
            System.out.println("Executing tuple query");
+           //change it to your preferred serialization format or iterate over the statements to do something
            connection.prepareTupleQuery(queryProvenanceGraph).evaluate(new SPARQLResultsJSONWriter(System.out));
            System.out.println("Executing Construct query");
            executeConstructQuery();
@@ -46,7 +55,7 @@ public class GraphDBReader {
            System.out.println("Connection closed");
        }
    }
-   
+
     private static void openConnection() {
         manager = new RemoteRepositoryManager(graphDBUrl);
         manager.init();
@@ -62,6 +71,7 @@ public class GraphDBReader {
         graphQueryResult.close();
         System.out.println(resultsModel.size());
         StringWriter recordWriter = new StringWriter();
+        //change it to your preferred serialization format (and include the proper RIO package among the dependency)
         RDFWriter rdfRecordWriter = Rio.createWriter(RDFFormat.RDFXML, recordWriter);
         Rio.write(resultsModel, rdfRecordWriter);
         System.out.println(recordWriter.toString());
