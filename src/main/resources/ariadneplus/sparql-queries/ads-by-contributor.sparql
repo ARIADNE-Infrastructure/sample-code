@@ -1,0 +1,8 @@
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?resourceIRI ?title  WHERE {
+    ?resourceIRI aocat:has_contributor ?contributor .
+    ?contributor rdfs:label "Archaeology Data Service" .
+    ?resourceIRI aocat:has_title ?title
+}
