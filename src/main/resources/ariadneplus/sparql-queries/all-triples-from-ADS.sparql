@@ -1,0 +1,8 @@
+select ?s ?p ?o where { 
+    GRAPH <https://ariadne-infrastructure.eu/datasourceApis> {
+        ?g <http://www.d-net.research-infrastructures.eu/provenance/isApiOf> "Archaeology Data Service" .
+        GRAPH ?g {
+            ?s ?p ?o .
+        }
+    } 
+}
