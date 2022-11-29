@@ -1,0 +1,187 @@
+# What object is “WMID-B72E48”?
+
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+SELECT * WHERE {
+    ?record aocat:has_original_id "WMID-B72E48"
+};
+
+DESCRIBE <https://ariadne-infrastructure.eu/aocat/Resource/BMPAS/B9113C78-1AB2-30E9-8733-EF084C93814E>;
+
+#What are ARIADNE subjects?
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+select distinct ?as ?label WHERE {
+    ?s aocat:has_ARIADNE_subject ?as .
+    ?as rdfs:label ?label
+};
+
+# How many agents are referred in the KB?
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT (count(distinct ?agentName) as ?cnt) WHERE {
+    ?record ?p ?agent .
+    ?agent rdf:type aocat:AO_Agent .
+    ?agent aocat:has_name ?agentName.
+};
+
+
+#number of collections by publisher
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT ?name (COUNT(?c) AS ?num_collections) WHERE {
+        ?c rdf:type aocat:AO_Collection .
+        ?c aocat:has_publisher ?publisher .
+        ?publisher rdfs:label ?name .
+    }
+GROUP BY ?name;
+
+#Let's remove the outlier
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+    PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT ?name (COUNT(?c) AS ?num_collections) WHERE {
+        ?c rdf:type aocat:AO_Collection .
+        ?c aocat:has_publisher ?publisher .
+        ?publisher rdfs:label ?name .
+    FILTER(?name != "HNM")
+    }
+GROUP BY ?name;
+
+
+#Get the list of AAT terms used in the records, each with the number of occurrences, in descending order.
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX gvp:<http://vocab.getty.edu/ontology#>
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+SELECT ?aat ?label (count(distinct ?record) as ?num_record) WHERE {
+    ?record aocat:has_derived_subject ?aat .
+    ?aat gvp:prefLabelGVP ?prefLabel .
+    ?prefLabel gvp:term ?label
+}
+GROUP BY ?aat ?label
+ORDER BY DESC(?num_record);
+
+#is the correspondence between native terms and AAT terms a function? if yes, is it total? is it injective? for each question, if the answer is “no”, provide a list of the exceptions.
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX gvp:<http://vocab.getty.edu/ontology#>
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+SELECT ?concept (count(distinct ?aat) as ?num_aat) WHERE {
+    ?record aocat:has_native_subject ?concept .
+    ?concept ?x ?aat	.
+    ?aat skos:inScheme <http://vocab.getty.edu/aat/>
+}
+GROUP BY ?concept
+ORDER BY DESC(?num_aat)
+
+#What is the Spanish and Dutch for “fortifications”. What is the Getty AAT URI for “swords”? Which French term has been mapped to it
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX gvp:<http://vocab.getty.edu/ontology#>
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+SELECT ?aat ?spanishLabel ?dutchLabel ?lab WHERE {
+    ?aat skos:prefLabel "fortifications"@en .
+    ?aat skos:inScheme <http://vocab.getty.edu/aat/>.
+    {
+    ?aat <http://www.w3.org/2008/05/skos-xl#prefLabel> ?prefLabel .
+    ?prefLabel dcterms:language <http://vocab.getty.edu/language/es>.
+    ?prefLabel 	gvp:term ?spanishLabel
+    }
+    UNION
+    {
+    ?aat <http://www.w3.org/2008/05/skos-xl#prefLabel> ?prefLabel .
+    ?prefLabel dcterms:language <http://vocab.getty.edu/language/nl>.
+    ?prefLabel 	gvp:term ?dutchLabel
+    }
+    UNION {
+        ?record aocat:has_derived_subject ?aat .
+        ?record aocat:has_native_subject ?subject .
+        ?subject skos:prefLabel ?lab .
+        FILTER (lang(?lab) = 'fr')
+    }
+}
+
+#Which organisation has contributed the largest number of records for warships?
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT (count(distinct ?r) as ?num_res) ?cName WHERE {
+    ?r aocat:has_derived_subject  ?aat.
+    ?aat skos:prefLabel "warships"@en .
+    ?r aocat:has_contributor ?c .
+    ?c aocat:has_name ?cName .
+
+}
+GROUP BY ?cName
+ORDER BY DESC(?num_res)
+
+#list fieldwork or fieldwork reports,  publishers and derived subjects
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+SELECT ?resource ?publisherName ?gettyLabel  WHERE {
+    ?resource aocat:has_publisher ?publisher .
+    ?publisher rdfs:label ?publisherName .
+    ?resource aocat:has_derived_subject ?getty .
+    ?getty skos:prefLabel ?gettyLabel
+  {
+ 	{?resource aocat:has_ARIADNE_subject <https://ariadne-infrastructure.eu/aocat/Concept/AO_Subject/Fieldwork%20report>}
+	UNION
+	{?resource aocat:has_ARIADNE_subject <https://ariadne-infrastructure.eu/aocat/Concept/AO_Subject/Fieldwork>}
+ }
+}
+
+
+#Check the native period range for a given publisher, e.g. CENIEH
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT ?npLabel ?from ?until WHERE {
+    ?r aocat:has_publisher ?pub .
+    ?pub aocat:has_name "CENIEH"@en .
+    ?r aocat:has_temporal_coverage ?tc .
+    ?tc aocat:from ?from .
+    ?tc aocat:until ?until .
+    ?tc aocat:has_native_period ?np .
+	?np skos:prefLabel ?npLabel .
+
+}
+GROUP BY ?npLabel ?from ?until
+
+
+#What is the date range for "long barrows"?
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+SELECT (MIN(?from) as ?min_from) (MAX(?until) as ?max_until) WHERE {
+    ?r aocat:has_derived_subject  ?aat.
+    ?aat skos:prefLabel "long barrows"@en .
+    ?r aocat:has_temporal_coverage ?tc .
+    ?tc aocat:from ?from .
+    ?tc aocat:until ?until .
+}
+
+#Extract all sites of a specific type which fall within a specific date range
+#which type and which date range? Up to you!
+
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX dcterms: <http://purl.org/dc/terms/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+SELECT ?record ?typeName ?from ?until ?pubName WHERE {
+    ?record aocat:has_ARIADNE_subject ?s .
+    ?s rdfs:label "Site/monument"@en .
+    ?record aocat:has_type ?type .
+    ?type rdfs:label ?typeName .
+    ?record aocat:has_temporal_coverage ?tc .
+    ?tc aocat:from ?from .
+    ?tc aocat:until ?until .
+    ?record aocat:has_publisher ?x.
+    ?x aocat:has_name ?pubName
+    FILTER(year(?from) >= -5000 && year(?until) <= 800)
+}
+ORDER BY ASC(?from)
+limit 100
+
+
+
+
