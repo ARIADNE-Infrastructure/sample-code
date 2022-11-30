@@ -182,6 +182,20 @@ SELECT ?record ?typeName ?from ?until ?pubName WHERE {
 ORDER BY ASC(?from)
 limit 100
 
+PREFIX aocat: <https://www.ariadne-infrastructure.eu/resource/ao/cat/1.1/>
+PREFIX skos: <http://www.w3.org/2004/02/skos/core#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+SELECT * WHERE {
+
+    ?r aocat:has_spatial_coverage ?sc .
+    ?sc rdf:type aocat:AO_Spatial_Region_BBox .
+    ?sc aocat:has_bounding_box_min_lat "41.2353929"^^xsd:decimal .
+	?sc aocat:has_bounding_box_min_lon ?bminlon .
+	?sc aocat:has_bounding_box_max_lat ?bmaxlat.
+	?sc aocat:has_bounding_box_max_lon ?bmaxlon .
+   
+}
 
 
 
