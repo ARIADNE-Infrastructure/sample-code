@@ -24,7 +24,7 @@ import java.nio.charset.StandardCharsets;
  */
 public class GraphDBReader {
 
-    private static String graphDBUrl = "https://graphdb-test.ariadne.d4science.org";
+    private static String graphDBUrl = "https://ariadne-graphdb-test.cloud.d4science.org/";
     private static String graphDBRepository = "ariadneplus-ts01";
 
     private static RepositoryConnection connection;
